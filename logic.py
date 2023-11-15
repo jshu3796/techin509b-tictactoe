@@ -97,7 +97,6 @@ class Bot(Player):
         return random.choice(available_moves)
 
 
-
 if __name__ == '__main__':
     player_mode = input('Enter "single" for single player or "multi" for two players: ')
     
@@ -110,9 +109,6 @@ if __name__ == '__main__':
         exit(1)
 
     game.run()
-
-
-
 
 
 def make_empty_board():

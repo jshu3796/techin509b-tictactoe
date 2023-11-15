@@ -10,14 +10,6 @@ logging.basicConfig(
     level=logging.INFO
 )
 
-
-# def print_board(board):
-#     print("Current Board:")
-#     print("-" * 5)
-#     for row in board:humanmmmmmm
-#         print(" | ".join(cell if cell is not None else " " for cell in row))
-#         print("-" * 5)
-
 if __name__ == '__main__':
    player = input('human or bot')
    if player=='bot':
