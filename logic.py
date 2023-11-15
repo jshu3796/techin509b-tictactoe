@@ -66,10 +66,10 @@ class Board:
 
     def print_board(self):
         print("Current Board:")
-        print("-" * 5)
+        print("-" * 9)
         for row in self._board:
             print(" | ".join(cell if cell != '' else " " for cell in row))
-            print("-" * 5)
+            print("-" * 9)
 
 class Player:
     def __init__(self, symbol):
