@@ -1,52 +1,46 @@
-# This file contains the Command Line Interface (CLI) for
-# the Tic-Tac-Toe game. This is where input and output happens.
-# For core game logic, see logic.py.
-
 import logging
-from logic import Game, Board, Human, Bot
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+from logic import Game, Human, Bot, write_to_csv
+
+DATABASE_FILE = 'logs/game_results.csv'
+LOG_FILE = 'logs/infos.log'
 
 logging.basicConfig(
-    filename='logs/infos.log',
-    level=logging.INFO
+    filename=LOG_FILE,
+    level=logging.INFO,
+    format='%(levelname)s %(asctime)s %(message)s',
 )
 
 if __name__ == '__main__':
-   player = input('human or bot')
-   if player=='bot':
-    game = Game(Human('X'), Bot('O'))
-    game.run()
-   if player=='human':
-    game = Game(Human('X'), Human('O'))
-    game.run()
-    # board = make_empty_board()
-    # winner = None
-    # current_player = "O"
+    import random
+    
+    for _ in range(30):
+        player_mode = random.choice(['human', 'bot'])
+        if player_mode == 'human':
+            game = Game(Human('X'), Human('O'))
+        else:
+            game = Game(Human('X'), Bot('O'))
+        game.run()
+        
+    df = pd.read_csv(DATABASE_FILE)
+    print("Descriptive Statistics:")
+    print(df.describe())
+    
+    X = df['First_Player_Moves'].values.reshape(-1, 1)
+    y = df['Winner'].apply(lambda x: 1 if x == 'X' else 0).values
 
-    # while winner is None:
-    #     game._board.print_board()
+    model = LinearRegression()
+    model.fit(X, y)
 
-    #     movement = input(f"Please input 'row,col' (0 <= row, col <= 2). It's {current_player}'s turn: ")
-    #     try:
-    #         row, col = map(int, movement.split(','))
+    print("\nLinear Regression Model:")
+    print(f"Coefficient: {model.coef_[0]}")
+    print(f"Intercept: {model.intercept_}")
+    
+    
+    positions = [[0], [1], [2]]  # Assuming 0: Corner, 1: Center, 2: Middle
+    likelihoods = model.predict(positions)
 
-    #         if board[row][col] is None:
-    #             board[row][col] = current_player
-    #         else:
-    #             print("Invalid move. Cell already occupied. Try again.")
-    #             continue
-
-    #         logging.info(f"Board state: {board}")
-    #         logging.info(f"{current_player} made a move at ({row}, {col})")
-
-    #         current_player = "X" if current_player == "O" else "O"
-    #         winner = get_winner(board)
-
-    #     except ValueError:
-    #         print("Invalid input format. Please use 'row,col'. Try again.")
-
-    # print_board(board)
-
-    # if winner:
-    #     print(f"Player {winner} wins!")
-    # else:
-    #     print("It's a draw!")
+    print("\nLikelihood of Winning from Each Game Position:")
+    for pos, likelihood in zip(positions, likelihoods):
+        print(f"Position {pos[0]}: {likelihood * 100:.2f}%")
